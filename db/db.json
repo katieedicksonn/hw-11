@@ -1,0 +1,4 @@
+[{"title":"Test Title","text":"Test text"}]
+
+// this will be used to store and retrieve notes using the FS modual
+
