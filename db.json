@@ -1,4 +1,1 @@
-[{"title":"Test Title","text":"Test text"}]
-
-// this will be used to store and retrieve notes using the FS modual
-
+{"notes":[{"title":"COOL NEED THIS","text":"YES","id":"4"},{"title":"COOL NEED THIS","text":"YES","id":"4"},{"title":"COOL NEED THIS","text":"YES","id":"5"},{"title":"COOL NEED THIS","text":"YES","id":"5"}]}
