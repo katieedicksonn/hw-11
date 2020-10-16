@@ -8,18 +8,15 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, 'public')));
 // data stucture
-let dbData = fs.readFileSync(path.join(__dirname, "/db.json"), "utf8");
-dbData = JSON.parse(dbData);
-console.log(dbData);
+let dbData = require("./db.json");
+// dbData = JSON.parse(dbData);
 
 let notesData = dbData.notes || [];
 
-// i need to find a way to give each note a unique id when it is saved
-// then to delete a note i need to read of the notes from the db.json, then remove the note with the given id property and rewrite the notes to the db.json file
 app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "/public/index.html"));
+    res.sendFile(path.join(__dirname, "index.html"));
 
 });
 // this is route that sends back the homepage
@@ -38,14 +35,14 @@ app.get("/api/notes/:id", function (req, res) {
     const emptyDbSchema = {
         notes: [],
     }
-    fs.writeFileSync(path.join(__dirname, "/db.json"), JSON.stringify(emptyDbSchema))
-    res.send("DELETED");
+    // fs.writeFileSync(path.join(__dirname, "/db.json"), JSON.stringify(emptyDbSchema))
+    // res.send("DELETED");
 })
 // route post api/notes this will recieve the new note to save onto the request body, then will add it to the db.json, and will return the new note to the cliant
 app.post("/api/notes", function (req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     const newNote = {
-        id: notesData[notesData.length - 1].id++,
+        id: Date.now(),
         title: req.body.title,
         text: req.body.text
     }
@@ -53,11 +50,34 @@ app.post("/api/notes", function (req, res) {
     const newDbState = {
         notes: notesData
     }
-    fs.writeFileSync(path.join(__dirname, "/db.json"), JSON.stringify(newDbState));
+    fs.writeFile(path.join(__dirname, "/db.json"), JSON.stringify(newDbState), function(err, data){
+        if (err) throw err;
+   
     res.send("note added")
-})
+});
+});
+app.delete("/api/notes/:id" , function (req,res){
+const id = req.params.id;
+//const data = dbData.notes;
 
+var newData  
+if (notesData.length > 0) {
+    newData = notesData.filter(note => String(note.id) != id)
+    const newDbState = {
+        notes: newData
+    }
+    fs.writeFile(path.join(__dirname, "/db.json"), JSON.stringify(newDbState), function(err){
+        if (err)
+    throw err});
+    res.json(newData);
+    notesData = [...newData];
 
+}else {console.log("no data")
+res.json("no data");
+}
+console.log(newData)
+
+});
 app.listen(PORT, function () {
     console.log("listen on port " + PORT)
 })
